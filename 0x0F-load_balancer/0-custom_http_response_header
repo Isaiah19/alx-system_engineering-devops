@@ -1,25 +1,15 @@
 #!/usr/bin/env bash
-
-# Ignore SC2154 for shellcheck
 # shellcheck disable=SC2154
-
-# Install Nginx if not already installed
-if ! dpkg -l | grep -q nginx; then
-    apt-get update
-    apt-get install -y nginx
-fi
-
-# Copy Nginx configuration from web-01 to web-02
-cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default_web-02
-
-# Replace the placeholder with the actual hostname
-sed -i "s/server_name _;/server_name $HOSTNAME;/g" /etc/nginx/sites-available/default_web-02
-
-# Add the custom HTTP response header
-echo 'add_header X-Served-By $HOSTNAME;' >> /etc/nginx/sites-available/default_web-02
-
-# Enable the new configuration
-ln -sf /etc/nginx/sites-available/default_web-02 /etc/nginx/sites-enabled/
-
-# Restart Nginx to apply changes
-service nginx restart
+#configures a new Ubuntu machine nginx
+sudo apt-get update
+sudo apt-get install nginx -y
+sudo ufw allow 'Nginx HTTP'
+echo "Holberton School" | sudo tee /var/www/html/index.nginx-debian.html
+new_string="listen 80 default_server;\\n\\tlocation \/redirect_me {\\n\\t\\treturn 301 https:\/\/www.youtube.com\/;\\n\\t}"
+sudo sed -i "s/listen 80 default_server;/$new_string/" /etc/nginx/sites-enabled/default
+echo "Ceci n'est pas une page" | sudo tee /usr/share/nginx/html/404.html
+new_string="listen 80 default_server;\\nerror_page 404 \/404.html;\\n\\tlocation = \/404.html {\\n\\t\\troot \/usr\/share\/nginx\/html;\\n\\t\\tinternal;\\n\\t}"
+sudo sed -i "s/listen 80 default_server;/$new_string/" /etc/nginx/sites-enabled/default
+new_string2="http {\\n\\tadd_header X-Served-By \"$HOSTNAME\";"
+sudo sed -i "s/http {/$new_string2/" /etc/nginx/nginx.conf
+sudo service nginx start
