@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Ignore SC2154 for shellcheck
+# shellcheck disable=SC2154
+
+# Install Nginx if not already installed
+if ! dpkg -l | grep -q nginx; then
+    apt-get update
+    apt-get install -y nginx
+fi
+
+# Copy Nginx configuration from web-01 to web-02
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default_web-02
+
+# Replace the placeholder with the actual hostname
+sed -i "s/server_name _;/server_name $HOSTNAME;/g" /etc/nginx/sites-available/default_web-02
+
+# Add the custom HTTP response header
+echo 'add_header X-Served-By $HOSTNAME;' >> /etc/nginx/sites-available/default_web-02
+
+# Enable the new configuration
+ln -sf /etc/nginx/sites-available/default_web-02 /etc/nginx/sites-enabled/
+
+# Restart Nginx to apply changes
+service nginx restart
