@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Function to display information about a subdomain
 display_info() {
@@ -8,14 +8,19 @@ display_info() {
     # Use dig to get the DNS record information
     record_info=$(dig +short $subdomain.$domain)
 
-    # Determine the record type
-    record_type=$(echo "$record_info" | awk 'NR==1{print $1}')
+    # Check if record_info is empty
+    if [ -z "$record_info" ]; then
+        echo "The subdomain $subdomain does not have a DNS record."
+    else
+        # Determine the record type
+        record_type=$(echo "$record_info" | awk 'NR==1{print $1}')
 
-    # Determine the destination IP
-    destination=$(echo "$record_info" | awk '{print $1}')
+        # Determine the destination IP
+        destination=$(echo "$record_info" | awk '{print $1}')
 
-    # Display the information
-    echo "The subdomain $subdomain is a $record_type record and points to $destination"
+        # Display the information
+        echo "The subdomain $subdomain is a $record_type record and points to $destination"
+    fi
 }
 
 # Main function
