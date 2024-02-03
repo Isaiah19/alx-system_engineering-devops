@@ -1,18 +1,31 @@
 #!/usr/bin/env bash
-# display contents about subdomains
 
-display_info ()
-{
-    domain="$1"
-    subdomain="$2"
-
-    dig "$subdomain.$domain" | awk '/ANSWER SECTION:/{getline; printf "The subdomain %s is a %s record and points to %s\n", var, $4, $5}' var="$subdomain"
+# Function to display information about a subdomain
+display_info() {
+    local domain="$1"
+    local subdomain="$2"
+    local record_type="$3"
+    local destination="$4"
+    
+    if [ -z "$destination" ]; then
+        echo "Error: Unable to retrieve information for $subdomain.$domain"
+    else
+        echo "The subdomain $subdomain is a $record_type record and points to $destination"
+    fi
 }
 
-for subdomain in "www" "lb-01" "web-01" "web-2" 
-do
-    if [ -z "$2" ] || [ "$2" == "$subdomain" ] ;
-    then
-	display_info "$1" "$subdomain"
-    fi
-done
+# Check if domain and subdomain are provided
+if [ "$#" -eq 1 ]; then
+    # Display information for default subdomains
+    display_info "$1" "www" "A" "$(dig +short www.$1)"
+    display_info "$1" "lb-01" "A" "$(dig +short lb-01.$1)"
+    display_info "$1" "web-01" "A" "$(dig +short web-01.$1)"
+    display_info "$1" "web-02" "A" "$(dig +short web-02.$1)"
+elif [ "$#" -eq 2 ]; then
+    # Display information for specified subdomain
+    display_info "$1" "$2" "A" "$(dig +short $2.$1)"
+else
+    echo "Usage: $0 <domain> [subdomain]"
+    exit 1
+fi
+
