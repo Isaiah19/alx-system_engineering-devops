@@ -21,8 +21,8 @@ listen hbnb
     balance roundrobin
     option httpclose
     option forwardfor
-    server 20205-web-01 18.204.9.29:80 check
-    server 20205-web-02 35.153.57.44:80 check
+    server 430300-web-01 18.204.9.29:80 check
+    server 430300-web-02 35.153.57.44:80 check
     option  forwardfor
     option  http-server-close
 

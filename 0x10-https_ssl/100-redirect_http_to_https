@@ -37,12 +37,12 @@ defaults
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
 
-listen kipronoh.tech
+listen ifytexinnovations.tech
         bind :80
         mode http
         balance roundrobin
-        server 20205-web-01 18.204.9.29:80 check
-        server 20205-web-02 35.153.57.44:80 check
+        server 430300-web-01 18.204.9.29:80 check
+        server 430300-web-02 35.153.57.44:80 check
 
 frontend www-http
         bind :80
@@ -58,8 +58,8 @@ frontend www-https
 backend www-backend
         balance  roundrobin
         http-request redirect scheme https code 301 if !{ ssl_fc }
-        server 20205-web-01 18.204.9.29:80 check
-        server 20205-web-02 35.153.57.44:80 check
+        server 430300-web-01 18.204.9.29:80 check
+        server 430300-web-02 35.153.57.44:80 check
 
 backend letsencrypt-backend
         server letsencrypt 127.0.0.1:54321
