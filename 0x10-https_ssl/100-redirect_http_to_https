@@ -38,7 +38,7 @@ defaults
     errorfile 504 /etc/haproxy/errors/504.http
 
 frontend www-http
-#	bind	0.0.0.0:80
+    bind	:80
     mode http
     reqadd X-Forwarded-Proto:\ http
     redirect scheme https code 301 if !{ ssl_fc }
@@ -46,7 +46,7 @@ frontend www-http
 
 frontend www-https
     mode http
-    bind *:443 ssl crt /etc/haproxy/certs/www.ifytexinnovations.tech.pem
+    bind *:443 ssl crt /etc/haproxy/certs/www.ifytexinnovations.tech.pem alpn h2,http/1.1
     reqadd X-Forwarded-Proto:\ https
     acl letsencrypt-acl path_beg /.well-known/acme-challenge/
     use_backend letsencrypt-backend if letsencrypt-acl
